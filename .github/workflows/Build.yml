@@ -14,20 +14,21 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          submodules: recursive 
 
-      - name: Setup MSBuild
-        uses: microsoft/setup-msbuild@v2
-
-      - name: Setup NuGet
-        uses: NuGet/setup-nuget@v2
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
 
       - name: Restore NuGet packages
-        run: nuget restore VPet.sln
+        run: dotnet restore VPet.sln
 
-      - name: Build (x64, Release)
+      - name: Build VPet (Release)
+        # Добавили флаги логгера msbuild, чтобы генерировались файлы логов
         run: >
-          msbuild VPet.sln
-          /p:Configuration=Release /p:Platform=x64 /m
+          dotnet build VPet.sln --configuration Release --no-restore
           /flp:logfile=build.log;verbosity=detailed
           /flp1:logfile=build.err.log;errorsonly
 
@@ -35,11 +36,12 @@ jobs:
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: VPet-Simulator.Windows-x64
-          path: VPet-Simulator.Windows/bin/x64/Release/
+          name: VPet-Simulator.Windows-Release
+          path: VPet-Simulator.Windows/bin/Release/
           if-no-files-found: error
 
       - name: Upload failure log artifact
+        # Этот шаг сработает только в случае падения сборки
         if: failure()
         uses: actions/upload-artifact@v4
         with:
