@@ -1,3 +1,4 @@
+
 name: Build VPet
 
 on:
@@ -31,11 +32,11 @@ jobs:
           "/flp:logfile=build.log;verbosity=detailed"
           "/flp1:logfile=build.err.log;errorsonly"
 
-      - name: Copy Game Resources (Instead of mklink.bat)
-        # ИСПРАВЛЕНО: заставили шаг работать через стандартную командную строку Windows
+      - name: Copy Game Resources (Only Core Mod)
         shell: cmd
+        # ИСПРАВЛЕНО: копируем строго обязательную папку 0000_core вместо всей папки mod
         run: |
-          xcopy "VPet-Simulator.Windows\mod" "VPet-Simulator.Windows\bin\x64\Release\net8.0-windows\mod" /E /I /Y
+          xcopy "VPet-Simulator.Windows\mod\0000_core" "VPet-Simulator.Windows\bin\x64\Release\net8.0-windows\mod\0000_core" /E /I /Y
           if exist "VPet-Simulator.Windows\lang" xcopy "VPet-Simulator.Windows\lang" "VPet-Simulator.Windows\bin\x64\Release\net8.0-windows\lang" /E /I /Y
 
       - name: Upload build artifact
