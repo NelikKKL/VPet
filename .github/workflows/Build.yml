@@ -25,11 +25,26 @@ jobs:
         run: nuget restore VPet.sln
 
       - name: Build (x64, Release)
-        run: msbuild VPet.sln /p:Configuration=Release /p:Platform=x64 /m
+        run: >
+          msbuild VPet.sln
+          /p:Configuration=Release /p:Platform=x64 /m
+          /flp:logfile=build.log;verbosity=detailed
+          /flp1:logfile=build.err.log;errorsonly
 
       - name: Upload build artifact
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: VPet-Simulator.Windows-x64
           path: VPet-Simulator.Windows/bin/x64/Release/
           if-no-files-found: error
+
+      - name: Upload failure log artifact
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-failure-logs
+          path: |
+            build.log
+            build.err.log
+          if-no-files-found: warn
