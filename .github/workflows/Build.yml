@@ -26,14 +26,14 @@ jobs:
         run: dotnet restore VPet.sln
 
       - name: Build VPet (Release)
-        # Заменили --arch x64 на параметр -p:Platform=x64, чтобы .NET CLI не ругался
         run: >
           dotnet build VPet.sln --configuration Release -p:Platform=x64 --no-restore
           "/flp:logfile=build.log;verbosity=detailed"
           "/flp1:logfile=build.err.log;errorsonly"
 
       - name: Copy Game Resources (Instead of mklink.bat)
-        # Физически копируем моды и локализацию в папку сборки
+        # ИСПРАВЛЕНО: заставили шаг работать через стандартную командную строку Windows
+        shell: cmd
         run: |
           xcopy "VPet-Simulator.Windows\mod" "VPet-Simulator.Windows\bin\x64\Release\net8.0-windows\mod" /E /I /Y
           if exist "VPet-Simulator.Windows\lang" xcopy "VPet-Simulator.Windows\lang" "VPet-Simulator.Windows\bin\x64\Release\net8.0-windows\lang" /E /I /Y
