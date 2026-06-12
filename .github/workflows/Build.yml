@@ -26,23 +26,22 @@ jobs:
         run: dotnet restore VPet.sln
 
       - name: Build VPet (Release)
-        # Оставляем детальное логирование сборки в файлы
+        # Обернули параметры логирования в кавычки "", чтобы PowerShell не ломал строку из-за точек с запятой
         run: >
           dotnet build VPet.sln --configuration Release --no-restore
-          /flp:logfile=build.log;verbosity=detailed
-          /flp1:logfile=build.err.log;errorsonly
+          "/flp:logfile=build.log;verbosity=detailed"
+          "/flp1:logfile=build.err.log;errorsonly"
 
       - name: Upload build artifact
         if: success()
         uses: actions/upload-artifact@v4
         with:
           name: VPet-Simulator.Windows-Release
-          # Указываем точный путь, куда dotnet складывает скомпилированное приложение
+          # Возвращаем точный путь с x64, который подтвердился в твоем логе
           path: VPet-Simulator.Windows/bin/x64/Release/net8.0-windows/
           if-no-files-found: error
 
       - name: Upload build log artifacts
-        # Изменили условие на always(), чтобы логи сохранялись и при успехе, и при ошибке
         if: always()
         uses: actions/upload-artifact@v4
         with:
