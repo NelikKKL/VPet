@@ -26,7 +26,6 @@ jobs:
         run: dotnet restore VPet.sln
 
       - name: Build VPet (Release)
-        # Обернули параметры логирования в кавычки "", чтобы PowerShell не ломал строку из-за точек с запятой
         run: >
           dotnet build VPet.sln --configuration Release --no-restore
           "/flp:logfile=build.log;verbosity=detailed"
@@ -36,9 +35,10 @@ jobs:
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: VPet-Simulator.Windows-Release
-          # Возвращаем точный путь с x64, который подтвердился в твоем логе
-          path: VPet-Simulator.Windows/bin/x64/Release/net8.0-windows/
+          name: VPet-Simulator-ReadyToRun
+          # ИСПРАВЛЕНО: забираем собранный релиз из VPet.Solution, 
+          # где автоматически объединяются Core, Windows, макеты и моды.
+          path: VPet.Solution/bin/Release/net8.0-windows/
           if-no-files-found: error
 
       - name: Upload build log artifacts
